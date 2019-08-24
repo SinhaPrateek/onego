@@ -1,43 +1,52 @@
 import json
 import requests
-import os
+import googlemaps
 
 # For more info on API - https://www.rome2rio.com/documentation/1-4/search/
 # regrading using request library for querying through a url -https://2.python-requests.org//en/latest/user/quickstart/
+# python client for google maps services https://github.com/googlemaps/google-maps-services-python
+# https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyC6mxE6UAQCPaRJjfBN64s6DeK77kT5b2E
 
-
-print(os.getcwd())
 api_token = 'bfOhgi4x'
 api_url_base = 'http://free.rome2rio.com/api/1.4/json/Search'
 api_url_base_auto_complete = 'http://free.rome2rio.com/api/1.4/xml/Autocomplete'
 
-# this does not work in Search API, lat,long work
-origin_place = 'Jama Masjid, New Delhi'
-dest_place = 'Ayyappa Swami Temple, Vijaya Bank Layout, Bangalore'
+# this does not work in Rom2Rio Search API, lat,long work
+# origin_place = 'Jama Masjid, New Delhi'
+# dest_place = 'Ayyappa Swami Temple, Vijaya Bank Layout, Bangalore'
 
-origin_position = '28.646811,77.236252'  # Jama Masjid, New Delhi
-dest_position = '12.891430,77.606113'  # Ayyappa Swami Temple,Vijaya Bank Layout,Bangalore
-search_output = open(os.getcwd() + '/files/JamaMasjid_AyyappaswamyTemple.json', 'w')
-
-# origin_place = 'Vijaya Bank Colony Ayyappa Temple, Vijaya Bank Layout, Bilekahalli, Bengaluru, Karnataka 560076, India'
-# dest_place = 'Mahakaleshwar Jyotirlinga, India'
 # origin_position = '28.646811,77.236252'  # Jama Masjid, New Delhi
-# dest_position = '12.891430,77.606113'  # Ayyappa Swami Temple, Vijaya Bank Layout
+# dest_position = '12.891430,77.606113'  # Ayyappa Swami Temple,Vijaya Bank Layout,Bangalore
+# search_output = open(os.getcwd() + '\\files\\JamaMasjid_AyyappaswamyTemple', 'w')  # run it from onego_poc1 as current working dir
 
-url_arguments_with_place_name = {'key': api_token, 'oName': origin_place, 'dName': dest_place}
+# def get_coordinates(place_string):      ## this is using Rom2Rio API, which does not work
+#     auto_complete_args = {'key': api_token, 'query': place_string}
+#     auto_complete_url = '{0}'.format(api_url_base_auto_complete)
+#     response = requests.get(auto_complete_url, params=auto_complete_args)
+#     print("Auto Complete API response: {}".format(str(response)))
+
+gmaps = googlemaps.Client(key='AIzaSyC6mxE6UAQCPaRJjfBN64s6DeK77kT5b2E')
+def get_coordinates_google(place_string):
+    geocode_res = gmaps.geocode(place_string)
+    latitude = geocode_res[0]['geometry']['location']['lat']
+    longitude = geocode_res[0]['geometry']['location']['lng']
+    return latitude, longitude
+
+origin_place = '3rd cross, 7th main, Vijaya Bank Layout, Bangalore'
+dest_place = 'Rd Number 21 E, Rajeev Nagar, Patna'
+
+lat, long = get_coordinates_google(origin_place)
+origin_position = "{},{}".format(lat, long)
+lat, long = get_coordinates_google(dest_place)
+dest_position = "{},{}".format(lat, long)
+
+# url_arguments_with_place_name = {'key': api_token, 'oName': origin_place, 'dName': dest_place}
 url_arguments_with_place_latlong = {'key': api_token, 'oPos': origin_position, 'dPos': dest_position}
-
-
-def get_coordinates(place_string):
-    auto_complete_args = {'key': api_token, 'query': place_string}
-    auto_complete_url = '{0}'.format(api_url_base_auto_complete)
-    response = requests.get(auto_complete_url, params=auto_complete_args)
-    print("Auto Complete API response: {}".format(str(response)))
 
 
 def get_route_info():
     api_url = '{0}'.format(api_url_base)
-    response = requests.get(api_url, params=url_arguments_with_place_latlong)
+    response = requests.get(api_url, params= url_arguments_with_place_latlong)
     # print(response.url)
     # print(response.status_code) - success code - 200, failure code - others (400 - for wrong formatted url)
 
