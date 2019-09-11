@@ -59,7 +59,7 @@ print("indian_airports_selected list size: %d" % len(selected_airports_code_name
 print("foreign_airports list size: %d" % len(foreign_airports))
 
 
-t_per_call = 33.2
+t_per_call = 6.54
 n_airports = len(selected_airports_code_name)
 n_calls = math.factorial(n_airports)/math.factorial(n_airports-2)
 total_time_expected = n_calls*t_per_call/(60*60)
@@ -80,7 +80,7 @@ def scrape_and_save(url,origin,destination):
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome('/home/xena/Desktop/prateek/oneGo/onego_poc1/files/chromedriver', options=chrome_options)
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(10)
     driver.get(url)
 
     div_elem = driver.find_elements_by_css_selector('._3215.row')
@@ -112,8 +112,8 @@ def renew_tor_ip():
 t1 = time.time()
 cnt = 0
 for pair in itertools.permutations(selected_airports_code_name,2):
-#     if cnt > 0:
-#         break
+#    if cnt > 1:
+#        break
 # ### proxy using tor: approach 1 : for one call, it takes 0.73 min, so for 17556 calls, it would take 9 days
 #     tr=TorRequest(password='birth@1992')  
 #     tr.reset_identity() #Reset Tor
@@ -123,19 +123,26 @@ for pair in itertools.permutations(selected_airports_code_name,2):
 #### proxy using tor: approach 1 : for one call, it takes 33.2 sec, so for 17556 calls, it would take 6.75 days
 #### For 35 airports,1190 calls(permutations), it took 4.5238 hrs that is 13.68 sec per call
 #### For 50 airports,2450 calls(p), it took 8.849 hrs that is 13 sec per call
+#### After latest optimization(implicit_wait(10sec)) , for 50 airports, 2450 calls, it took 6.86 hrs, 2 hrs lesser than before, 10.1 sec per call
     if cnt%10 == 0:
+        #time_renew_first = time.time()
         renew_tor_ip()
+        print(cnt)
+        #time_renew = time.time() - time_renew_first
+        #print("time_renew: {} sec".format(time_renew))
     origin = pair[0]
     destination = pair[1]
     url = "https://paytm.com/flights/flightSearch/%s/%s/1/0/0/E/%s" % (origin, destination, DepDate)
     scrape_and_save(url,origin,destination)
     cnt=cnt+1
     print(url)
+    
 
 print("count of calls:{}".format(cnt))
 #print("count of rows:{}".format(total_rows))
 total_time = time.time() - t1
 # print("total time taken: {} sec".format(total_time)) 
-print("total time taken: {} hours".format((total_time)/(60*60)))
+print("total time taken: {} hours and completed at {}".format((total_time)/(60*60), time.time()))
+
 
 
