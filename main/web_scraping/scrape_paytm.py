@@ -68,7 +68,9 @@ print("total_time expected in hours: {}".format(total_time_expected))
 
 # url = "https://paytm.com/flights/flightSearch/AGR-Agra/AGX-Agatti Island/1/0/0/E/2019-05-30"
 # url = "https://paytm.com/flights/flightSearch/BLR-Bengaluru/BOM-Mumbai/1/0/0/E/2019-09-01"
-data = pd.DataFrame(columns=['RecordDate', 'Airline','Flight','Dept_Date','Dept_Time', 'Origin', 'Duration','Stops','Arr_Date', 'Arr_Time', 'Destination', 'Total_Fare'])
+
+
+data = pd.DataFrame(columns=['Record_TimeStamp', 'Airline','Flight','Dept_Date','Dept_Time', 'Origin', 'Duration','Stops','Arr_Date', 'Arr_Time', 'Destination', 'Total_Fare', 'Record_Date'])
 
 # output_file = 'paytm_flights_test.csv'
 data.to_csv(output_dir + args.output_file, mode='a', index=False)
@@ -86,19 +88,21 @@ def scrape_and_save(url,origin,destination):
     div_elem = driver.find_elements_by_css_selector('._3215.row')
     
         
-    RecordDate = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    Record_TimeStamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    Record_Date = str(datetime.now().strftime("%Y-%m-%d"))
     ArrDate ="NA"
     rows=[]
     if(len(div_elem) > 0):
         for elem in div_elem:
             row = elem.text.split("\n")   # list of values
             row=row[:-3]                  # discard last three elements
-            row.insert(0,RecordDate)
+            row.insert(0,Record_TimeStamp)
             row.insert(3,DepDate)
             row.insert(8,ArrDate)
+            row.insert(13,Record_Date)
             rows.append(row)
     else:
-       rows = [[RecordDate, 'NA','NA',DepDate,'NA', origin, 'NA','NA', ArrDate, 'NA', destination, 'NA']]
+       rows = [[Record_TimeStamp, 'NA','NA',DepDate,'NA', origin, 'NA','NA', ArrDate, 'NA', destination, 'NA', Record_Date]]
 
     data = pd.DataFrame(rows)
     
@@ -112,8 +116,8 @@ def renew_tor_ip():
 t1 = time.time()
 cnt = 0
 for pair in itertools.permutations(selected_airports_code_name,2):
-#    if cnt > 1:
-#        break
+#     if cnt > 10:
+#         break
 # ### proxy using tor: approach 1 : for one call, it takes 0.73 min, so for 17556 calls, it would take 9 days
 #     tr=TorRequest(password='birth@1992')  
 #     tr.reset_identity() #Reset Tor
