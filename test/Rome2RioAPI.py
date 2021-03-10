@@ -5,9 +5,9 @@ import googlemaps
 # For more info on API - https://www.rome2rio.com/documentation/1-4/search/
 # regrading using request library for querying through a url -https://2.python-requests.org//en/latest/user/quickstart/
 # python client for google maps services https://github.com/googlemaps/google-maps-services-python
-# https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyC6mxE6UAQCPaRJjfBN64s6DeK77kT5b2E
+# https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=key
 
-api_token = 'bfOhgi4x'
+api_token = 'abcd'
 api_url_base = 'http://free.rome2rio.com/api/1.4/json/Search'
 api_url_base_auto_complete = 'http://free.rome2rio.com/api/1.4/xml/Autocomplete'
 
@@ -25,7 +25,7 @@ api_url_base_auto_complete = 'http://free.rome2rio.com/api/1.4/xml/Autocomplete'
 #     response = requests.get(auto_complete_url, params=auto_complete_args)
 #     print("Auto Complete API response: {}".format(str(response)))
 
-gmaps = googlemaps.Client(key='AIzaSyC6mxE6UAQCPaRJjfBN64s6DeK77kT5b2E')
+gmaps = googlemaps.Client(key='Efr35fgrwwq')
 def get_coordinates_google(place_string):
     geocode_res = gmaps.geocode(place_string)
     latitude = geocode_res[0]['geometry']['location']['lat']
